@@ -4,4 +4,4 @@ from .models import Book
 # Register your models here.
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ["author", "publication_year"]
