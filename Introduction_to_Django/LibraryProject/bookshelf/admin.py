@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Book
 
 # Register your models here.
-@admin.register(Author)
-class AuthorAdmin(admin.ModelAdmin):
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
     list_filter = ["author", "publication_year"]
+    list_display = ("title", "author", "publication_year")
