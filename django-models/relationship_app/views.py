@@ -23,7 +23,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('home')  # Redirect to home page after successful registration
+            return redirect('home')
     else:
         form = UserCreationForm()
     return render(request, 'relationship_app/register.html', {'form': form})
@@ -33,3 +33,18 @@ class LoginView(LoginView):
 
 class LogoutView(LogoutView):
     template_name = 'users/logout.html'
+
+def check_role(user, role):
+    return user.userprofile.role == role
+
+@user_passes_test(lambda u: check_role(u, 'Admin'))
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+@user_passes_test(lambda u: check_role(u, 'Librarian'))
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+@user_passes_test(lambda u: check_role(u, 'Member'))
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
