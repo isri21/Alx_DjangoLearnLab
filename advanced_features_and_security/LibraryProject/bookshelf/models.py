@@ -7,6 +7,14 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     publication_year = models.IntegerField()
 
+    class Meta:
+        permissions = (
+            ("can_view", "Can View Model"),
+            ("can_create", "Can Create Model"),
+            ("can_edit", "Can Edit Model"),
+            ("can_delete", "Can Delete Model"),
+            )
+
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
