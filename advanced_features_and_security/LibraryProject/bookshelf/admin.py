@@ -7,6 +7,7 @@ class BookAdmin(admin.ModelAdmin):
     list_filter = ["author", "publication_year"]
     search_fields = ["title", "author", "publication_year"]
 
-@admin.register(CustomUser)
-class CustomeUserAdmin(admin.ModelAdmin):
+class CustomUserAdmin(admin.ModelAdmin):
     list_display = ("username", "email", "date_of_birth")
+
+admin.site.register(CustomUser, CustomUserAdmin)
