@@ -10,6 +10,7 @@ class BookAPITestCase(TestCase):
         self.client = APIClient()
 
     def test_create_book(self):
+        self.client.login(username="root", password="root")
         data = {
             "title": "New Django Book",
             "publication_year": 2022
@@ -27,10 +28,12 @@ class BookAPITestCase(TestCase):
         self.assertEqual(response.data['title'], "Django for Beginners")
 
     def test_update_book(self):
+        self.client.login(username="root", password="root")
         data = {"title": "Updated Title", "publication_year": 2020}
         response = self.client.put(f'/api/books/{self.book1.id}/', data)
 
     def test_delete_book(self):
+        self.client.login(username="root", password="root")
         response = self.client.delete(f'/api/books/{self.book1.id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
  
