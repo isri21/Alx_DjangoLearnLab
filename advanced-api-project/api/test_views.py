@@ -24,6 +24,7 @@ class BookAPITestCase(TestCase):
     def test_get_single_book(self):
         response = self.client.get(f'/api/books/{self.book1.id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['title'], "Django for Beginners")
 
     def test_update_book(self):
         data = {"title": "Updated Title", "publication_year": 2020}
