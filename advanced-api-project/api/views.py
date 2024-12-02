@@ -12,7 +12,7 @@ class ListView(generics.ListAPIView):
 	serializer_class = BookSerializer
 	filter_backends = [rest_framework.DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
 	filterset_fields = "__all__"
-	search_fields = ["title", "author", "publication_year"]
+	search_fields = ["title", "author__name", "publication_year"]
 	ordeing_fields = ["title", "author", "publication_year"]
 
 class DetailView(generics.RetrieveAPIView):
