@@ -5,6 +5,7 @@ from .models import Post
 from .forms import CreateUser, UpdateUserForm, CreateForm
 from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 class Register(CreateView):
@@ -13,6 +14,7 @@ class Register(CreateView):
 	template_name = "blog/register.html"
 	success_url = reverse_lazy("login")
 
+@login_required
 def profile(request):
 	user = request.user
 	if request.method == "POST":
