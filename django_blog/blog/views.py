@@ -28,9 +28,8 @@ def profile(request):
 
 class List(ListView):
 	model = Post
-	template_name = "list.html"
 	context_object_name = "posts"
-	template_name = "blog/list.html"
+	# template_name = "blog/list.html"
 
 class Detail(DetailView):
 	model = Post
