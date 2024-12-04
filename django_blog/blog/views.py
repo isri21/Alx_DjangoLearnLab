@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
-from .forms import CreateUser, UpdateForm
-from django.views.generic import CreateView, UpdateView
+from .models import Post
+from .forms import CreateUser, UpdateUserForm, CreateForm
+from django.views.generic import CreateView, UpdateView, ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -12,24 +13,33 @@ class Register(CreateView):
 	template_name = "blog/register.html"
 	success_url = reverse_lazy("login")
 
-# class Profile(LoginRequiredMixin, UpdateView):
-# 	model = User
-# 	fields = ["username", "first_name", "last_name", "email"]
-# 	success_url = reverse_lazy("profile")
-# 	template_name = "blog/profile.html"
-
-# 	def get_object(self, queryset=None):
-# 		return self.request.user
-
 def profile(request):
 	user = request.user
 	if request.method == "POST":
-		form = UpdateForm(request.POST, instance=user)
+		form = UpdateUserForm(request.POST, instance=user)
 		if form.is_valid():
 			form.save()
 			return redirect("profile")
 		else:
 			return render(request, "blog/profile.html", {"form": form})
 	
-	form = UpdateForm(instance=user)
+	form = UpdateUserForm(instance=user)
 	return render(request, "blog/profile.html", {"form": form})
+
+class List(ListView):
+	model = Post
+	template_name = "list.html"
+	context_object_name = "posts"
+	template_name = "blog/list.html"
+
+class Detail(DetailView):
+	model = Post
+	template_name = "list.html"
+	context_object_name = "post"
+	template_name = "blog/detail.html"
+
+class New(CreateView):
+	model = Post
+	form_class = CreateForm
+	template_name = "blog/create.html"
+	success_url = reverse_lazy('posts')
