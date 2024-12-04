@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import Register, profile, List, Detail, New
+from .views import Register, profile, List, Detail, New, Edit, Delete
 from django.contrib.auth.views import LoginView, LogoutView
 
 
@@ -12,4 +12,6 @@ urlpatterns = [
 	path("posts/", List.as_view(), name="posts"),
 	path("posts/<int:pk>", Detail.as_view(), name="post-detail"),
 	path("posts/new/", New.as_view(), name="new"),
+	path("posts/<int:pk>/edit/", Edit.as_view(), name="edit_post"),
+	path("posts/<int:pk>/delete/", Delete.as_view(), name="delete_post"),
 ]

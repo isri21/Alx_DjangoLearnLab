@@ -3,8 +3,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from .models import Post
 from .forms import CreateUser, UpdateUserForm, CreateForm
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 # Create your views here.
 class Register(CreateView):
@@ -38,8 +38,29 @@ class Detail(DetailView):
 	context_object_name = "post"
 	template_name = "blog/detail.html"
 
-class New(CreateView):
+class New(LoginRequiredMixin, CreateView):
 	model = Post
 	form_class = CreateForm
 	template_name = "blog/create.html"
 	success_url = reverse_lazy('posts')
+
+class Edit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+	model = Post
+	form_class = CreateForm
+	template_name = "blog/edit.html"
+	success_url = reverse_lazy('posts')
+	context_object_name = "post"
+
+	def test_func(self):
+		post = self.get_object()
+		return self.request.user == post.author
+
+class Delete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+	model = Post
+	template_name = "blog/delete.html"
+	success_url = reverse_lazy('posts')
+	context_object_name = "post"
+
+	def test_func(self):
+		post = self.get_object()
+		return self.request.user == post.author
