@@ -33,20 +33,19 @@ class List(ListView):
 
 class Detail(DetailView):
 	model = Post
-	template_name = "list.html"
 	context_object_name = "post"
-	template_name = "blog/detail.html"
+	# template_name = "blog/detail.html"
 
 class New(LoginRequiredMixin, CreateView):
 	model = Post
 	form_class = CreateForm
-	template_name = "blog/create.html"
+	# template_name = "blog/create.html"
 	success_url = reverse_lazy('posts')
 
 class Edit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 	model = Post
 	form_class = CreateForm
-	template_name = "blog/edit.html"
+	# template_name = "blog/edit.html"
 	success_url = reverse_lazy('posts')
 	context_object_name = "post"
 
@@ -56,7 +55,7 @@ class Edit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class Delete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	model = Post
-	template_name = "blog/delete.html"
+	# template_name = "blog/delete.html"
 	success_url = reverse_lazy('posts')
 	context_object_name = "post"
 
