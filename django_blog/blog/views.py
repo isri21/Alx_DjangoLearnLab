@@ -77,20 +77,20 @@ class Delete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 		
 
 class CommentCreateView(LoginRequiredMixin, View):
-	def get(self, request, post_id):
-		post = get_object_or_404(Post, id=post_id)
+	def get(self, request, pk):
+		post = get_object_or_404(Post, id=pk)
 		form = CommentForm()
 		return render(request, "blog/comment_post.html", {"post": post,	"form": form})
 	
-	def post(self, request, post_id):
-		post = get_object_or_404(Post, id=post_id)
+	def post(self, request, pk):
+		post = get_object_or_404(Post, id=pk)
 		form = CommentForm(request.POST)
 		if form.is_valid():
 			comment = form.save(commit=False)
 			comment.author = request.user
 			comment.post = post
 			comment.save()
-			return redirect("post-detail", pk=post_id)
+			return redirect("post-detail", pk=pk)
 		else:
 			return render(request, "blog/comment_post.html", {"post": post,	"form": form})
 	
