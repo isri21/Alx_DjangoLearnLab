@@ -96,37 +96,34 @@ class CommentCreateView(LoginRequiredMixin, View):
 	
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
 	def test_func(self):
-		comment_id = self.kwargs['comment_id']
+		comment_id = self.kwargs['pk']
 		comment = get_object_or_404(Comment, id=comment_id)
 		return self.request.user == comment.author
-	def get(self, request, post_id, comment_id):
-		post = get_object_or_404(Post, id=post_id)
-		comment = get_object_or_404(Comment, id=comment_id)
+	def get(self, request, pk):
+		comment = get_object_or_404(Comment, id=pk)
 		form = CommentForm(instance=comment)
-		return render(request, "blog/comment_update.html", {"form": form, "comment": comment, "post": post})
-	def post(self, request, comment_id, post_id):
-		post = get_object_or_404(Post, id=post_id)
-		comment = get_object_or_404(Comment, id=comment_id)
+		return render(request, "blog/comment_update.html", {"form": form, "comment": comment})
+	def post(self, request, pk):
+		comment = get_object_or_404(Comment, id=pk)
 		form = CommentForm(request.POST, instance=comment)
 		if form.is_valid():
 			form.save()
-			return redirect("post-detail", pk=post_id)
+			return redirect("posts")
 		else:
-			return render(request, "blog/comment_update.html", {"form": form, "comment": comment, "post": post})
+			return render(request, "blog/comment_update.html", {"form": form, "comment": comment})
 
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 	def test_func(self):
-		comment_id = self.kwargs["comment_id"]
+		comment_id = self.kwargs["pk"]
 		comment = get_object_or_404(Comment, id=comment_id)
 		return self.request.user == comment.author
 	
-	def get(self, request, post_id, comment_id):
-		post = get_object_or_404(Post, id=post_id)
-		comment = get_object_or_404(Comment, id=comment_id)
-		return render(request, "blog/comment_confirm_delete.html", {"comment": comment, "post": post})
+	def get(self, request, pk):
+		comment = get_object_or_404(Comment, id=pk)
+		return render(request, "blog/comment_confirm_delete.html", {"comment": comment})
 	
-	def post(self, request, post_id, comment_id):
-		comment = get_object_or_404(Comment, id=comment_id)
+	def post(self, request, pk):
+		comment = get_object_or_404(Comment, id=pk)
 		comment.delete()
 		comment.save()
 		return redirect("posts")
