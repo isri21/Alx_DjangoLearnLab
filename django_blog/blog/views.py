@@ -70,10 +70,20 @@ class Delete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 		post = self.get_object()
 		return self.request.user == post.author
 	
-@login_required
-def add_comment(request, post_id):
-	post = get_object_or_404(Post, id=post_id)
-	if request.method == "POST":
+# @login_required
+# def add_comment(request, post_id):
+# 	post = get_object_or_404(Post, id=post_id)
+# 	if request.method == "POST":
+		
+
+class CommentCreateView(LoginRequiredMixin, View):
+	def get(self, request, post_id):
+		post = get_object_or_404(Post, id=post_id)
+		form = CommentForm()
+		return render(request, "blog/comment_post.html", {"post": post,	"form": form})
+	
+	def post(self, request, post_id):
+		post = get_object_or_404(Post, id=post_id)
 		form = CommentForm(request.POST)
 		if form.is_valid():
 			comment = form.save(commit=False)
@@ -83,11 +93,8 @@ def add_comment(request, post_id):
 			return redirect("post-detail", pk=post_id)
 		else:
 			return render(request, "blog/comment_post.html", {"post": post,	"form": form})
-	form = CommentForm()
-	return render(request, "blog/comment_post.html", {"post": post,	"form": form})
-
-
-class UpdateComment(LoginRequiredMixin, UserPassesTestMixin, View):
+	
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, View):
 	def test_func(self):
 		comment_id = self.kwargs['comment_id']
 		comment = get_object_or_404(Comment, id=comment_id)
@@ -107,7 +114,7 @@ class UpdateComment(LoginRequiredMixin, UserPassesTestMixin, View):
 		else:
 			return render(request, "blog/comment_update.html", {"form": form, "comment": comment, "post": post})
 
-class DeleteComment(LoginRequiredMixin, UserPassesTestMixin, View):
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 	def test_func(self):
 		comment_id = self.kwargs["comment_id"]
 		comment = get_object_or_404(Comment, id=comment_id)
