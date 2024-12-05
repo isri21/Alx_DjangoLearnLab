@@ -1,0 +1,8 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<form action="{% url 'edit_comment' post.id comment.id %}" method="post">
+	{% csrf_token %}
+	{{ form.as_p }}
+	<button type="submit">Edit</button>
+</form>
+{% endblock %}

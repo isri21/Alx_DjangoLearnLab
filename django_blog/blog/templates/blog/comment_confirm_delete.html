@@ -1,0 +1,9 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<h1>Are You Sure You Want To Delete {{comment.content}}</h1>
+<form action="{% url 'delete_comment' post.id comment.id %}" method="post">
+	{% csrf_token %}
+	<button type="submit">Delete</button>
+</form>
+<a href="{% url 'post-detail' post.id %}">Cancel</a>
+{% endblock %}

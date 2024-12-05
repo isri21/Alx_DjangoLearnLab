@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Post
+from .models import Post, Comment
 from django import forms
 
 class CreateUser(UserCreationForm):
@@ -17,3 +17,8 @@ class CreateForm(forms.ModelForm):
 	class Meta:
 		model = Post
 		fields = ["title", "content", "author"]
+
+class CommentForm(forms.ModelForm):
+	class Meta:
+		model = Comment
+		fields = ["content"]

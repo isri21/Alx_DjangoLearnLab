@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
-from .models import Post
-from .forms import CreateUser, UpdateUserForm, CreateForm
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
+from .models import Post, Comment
+from .forms import CreateUser, UpdateUserForm, CreateForm, CommentForm
+from django.views.generic import View, CreateView, UpdateView, ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Create your views here.
 class Register(CreateView):
@@ -36,8 +36,13 @@ class List(ListView):
 class Detail(DetailView):
 	model = Post
 	context_object_name = "post"
-	# template_name = "blog/detail.html"
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["comments"] = Comment.objects.filter(post=self.object)
+
+		return context
+	
 class New(LoginRequiredMixin, CreateView):
 	model = Post
 	form_class = CreateForm
@@ -64,3 +69,57 @@ class Delete(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 	def test_func(self):
 		post = self.get_object()
 		return self.request.user == post.author
+	
+@login_required
+def add_comment(request, post_id):
+	post = get_object_or_404(Post, id=post_id)
+	if request.method == "POST":
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			comment = form.save(commit=False)
+			comment.author = request.user
+			comment.post = post
+			comment.save()
+			return redirect("post-detail", pk=post_id)
+		else:
+			return render(request, "blog/comment_post.html", {"post": post,	"form": form})
+	form = CommentForm()
+	return render(request, "blog/comment_post.html", {"post": post,	"form": form})
+
+
+class UpdateComment(LoginRequiredMixin, UserPassesTestMixin, View):
+	def test_func(self):
+		comment_id = self.kwargs['comment_id']
+		comment = get_object_or_404(Comment, id=comment_id)
+		return self.request.user == comment.author
+	def get(self, request, post_id, comment_id):
+		post = get_object_or_404(Post, id=post_id)
+		comment = get_object_or_404(Comment, id=comment_id)
+		form = CommentForm(instance=comment)
+		return render(request, "blog/comment_update.html", {"form": form, "comment": comment, "post": post})
+	def post(self, request, comment_id, post_id):
+		post = get_object_or_404(Post, id=post_id)
+		comment = get_object_or_404(Comment, id=comment_id)
+		form = CommentForm(request.POST, instance=comment)
+		if form.is_valid():
+			form.save()
+			return redirect("post-detail", pk=post_id)
+		else:
+			return render(request, "blog/comment_update.html", {"form": form, "comment": comment, "post": post})
+
+class DeleteComment(LoginRequiredMixin, UserPassesTestMixin, View):
+	def test_func(self):
+		comment_id = self.kwargs["comment_id"]
+		comment = get_object_or_404(Comment, id=comment_id)
+		return self.request.user == comment.author
+	
+	def get(self, request, post_id, comment_id):
+		post = get_object_or_404(Post, id=post_id)
+		comment = get_object_or_404(Comment, id=comment_id)
+		return render(request, "blog/comment_confirm_delete.html", {"comment": comment, "post": post})
+	
+	def post(self, request, post_id, comment_id):
+		comment = get_object_or_404(Comment, id=comment_id)
+		comment.delete()
+		comment.save()
+		return redirect("posts")
