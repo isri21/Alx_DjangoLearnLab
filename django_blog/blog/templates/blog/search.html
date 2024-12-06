@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+{% block content %}
+<form action="" method="get" class="search">
+	<label for="search" id="search">Search: </label>
+	<input type="search" name="search" id="search">
+	<button type="submit">Search</button>
+</form>
+{% if posts %}
+	{% for post in posts %}
+		<h1>{{post.title}} (ID: {{post.id}})</h1>
+		<p>{{post.content}}</p>
+		<br>
+	{% endfor %}
+{% else %}
+<h1>There are no posts currently!</h1>
+{% endif %}
+{% endblock %}

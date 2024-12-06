@@ -5,7 +5,8 @@ from .models import Post, Comment
 from .forms import CreateUser, UpdateUserForm, CreateForm, CommentForm
 from django.views.generic import View, CreateView, UpdateView, ListView, DetailView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 # Create your views here.
 class Register(CreateView):
@@ -52,7 +53,7 @@ class New(LoginRequiredMixin, CreateView):
 class Edit(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 	model = Post
 	form_class = CreateForm
-	# template_name = "blog/edit.html"
+	template_name = "blog/edit.html"
 	success_url = reverse_lazy('posts')
 	context_object_name = "post"
 
@@ -127,3 +128,22 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 		comment.delete()
 		comment.save()
 		return redirect("posts")
+
+def search(request):
+	key = request.GET.get("search", None)
+	if key == None:
+		posts = []
+	else:
+		posts = Post.objects.filter(
+			Q(title__icontains = key) | Q(content__icontains = key) | Q(tags__name__icontains = key) | Q(author__username__icontains = key)
+		).distinct()
+	return render(request, "blog/search.html", {"posts": posts})
+
+def tags(request, tag_name):
+	posts = Post.objects.filter(tags__slug__icontains = tag_name)
+	context = {
+		"posts": posts,
+		"tag": tag_name
+	}
+	return render(request, "blog/taglist.html", context)
+	

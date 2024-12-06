@@ -12,5 +12,12 @@
 		<li>ID: {{comment.id}} | {{comment.content}}</li>
 	{% endfor %}
 </ul>
+<h1>Tags:</h1>
+<br>
+<p>
+	{% for tag in post.tags.all %}
+		<b>{{tag.name}}</b>,
+	{% endfor %}
+</p>
 
 {% endblock %}
