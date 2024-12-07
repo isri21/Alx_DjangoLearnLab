@@ -1,3 +1,4 @@
+from django.db.models.query import QuerySet
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
@@ -139,11 +140,15 @@ def search(request):
 		).distinct()
 	return render(request, "blog/search.html", {"posts": posts})
 
-def tags(request, tag_name):
-	posts = Post.objects.filter(tags__slug__icontains = tag_name)
-	context = {
-		"posts": posts,
-		"tag": tag_name
-	}
-	return render(request, "blog/taglist.html", context)
+class TagListView(ListView):
+	context_object_name = "posts"
+
+	def get_queryset(self):
+		tag = self.kwargs.get("tag_slug")
+		if tag:
+			return Post.objects.filter(tags__slug__icontains = tag)
+		else:
+			return []
+
+	
 	
