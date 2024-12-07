@@ -140,7 +140,7 @@ def search(request):
 		).distinct()
 	return render(request, "blog/search.html", {"posts": posts})
 
-class TagListView(ListView):
+class PostByTagListView(ListView):
 	context_object_name = "posts"
 
 	def get_queryset(self):
