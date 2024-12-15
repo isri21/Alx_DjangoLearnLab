@@ -8,6 +8,6 @@ comment_router = DefaultRouter()
 comment_router.register(r'comments', CommentViewSet)
 
 urlpatterns = [
-    path('', include(post_router.urls)),
-    path('comments/', include(comment_router.urls)),
+    path('post/', include(post_router.urls)),
+    path('comment/', include(comment_router.urls)),
 ]
