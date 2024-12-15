@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from accounts.serializers import UserCreationSerializer, UserLoginSerializer, UserProfileSerializer
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from .functions import get_token
 from rest_framework import status
 from .models import User
@@ -41,6 +41,30 @@ def profile(request):
 		return Response(profile.data, status=status.HTTP_200_OK)
 	except Exception:
 		return Response({"error": "An Error Occured"}, status=status.HTTP_400_BAD_REQUEST)
+	
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])	
+def follow(request, user_id):
+	if request.method == "POST":
+		follow = get_user_model().objects.get(id=user_id)
+		user = request.user
+		user.following.add(follow)
+		follow.followers.add(user)
+
+		return Response({"status": f"You have followed {follow}"}, status=status.HTTP_200_OK)
+	
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])	
+def unfollow(request, user_id):
+	if request.method == "POST":
+		unfollow = get_user_model().objects.get(id=user_id)
+		user = request.user
+		user.following.remove(unfollow)
+		unfollow.followers.remove(user)
+
+		return Response({"status": f"You have unfollowed {unfollow}"}, status=status.HTTP_200_OK)
+	
 
 
 			

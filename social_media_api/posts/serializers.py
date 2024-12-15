@@ -14,6 +14,7 @@ class PostSerializer(serializers.ModelSerializer):
 		# The value will be passed by the user when the call serializer.save(created_by=request.user)
 		validated_data["author"] = self.context.get("created_by")
 		return Post.objects.create(**validated_data)
+
 	
 class CommentSerializer(serializers.ModelSerializer):
 

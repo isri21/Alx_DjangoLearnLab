@@ -6,8 +6,10 @@ post_router = DefaultRouter()
 post_router.register(r'posts', PostViewSet)
 comment_router = DefaultRouter()
 comment_router.register(r'comments', CommentViewSet)
+from .views import feed
 
 urlpatterns = [
     path('post/', include(post_router.urls)),
     path('comment/', include(comment_router.urls)),
+    path('feed/', feed, name="feed"),
 ]
