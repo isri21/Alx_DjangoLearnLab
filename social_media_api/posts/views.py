@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.contenttypes.models import ContentType
 from notifications.models import Notification
-
+from rest_framework import generics
 # Create your views here.
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -39,13 +39,13 @@ def feed(request):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def like(request, pk):
-	post = Post.objects.get(id=pk)
+	post = generics.get_object_or_404(Post, pk=pk)
 	user = request.user
 
 	if Like.objects.filter(user=user, post=post).exists():
 		return Response({"info": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
 
-	like = Like.objects.create(user=user, post=post)
+	like, created = Like.objects.get_or_create(user=user, post=post)
 	notification = Notification.objects.create(
 		recipient=post.author,
 		actor=user,
@@ -61,7 +61,7 @@ def like(request, pk):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def unlike(request, pk):
-	post = Post.objects.get(id=pk)
+	post = generics.get_object_or_404(Post, pk=pk)
 	user = request.user
 	like = Like.objects.get(post=post)
 	like.delete()
