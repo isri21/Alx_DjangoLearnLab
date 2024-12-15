@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, get_user_model
 from .functions import get_token
 from rest_framework import status
 from .models import User
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework import generics
 from accounts.models import User as CustomUser
@@ -34,7 +34,7 @@ def login(request):
 			return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])	
+@permission_classes([permissions.IsAuthenticated])	
 def profile(request):
 	try:
 		user = request.user
@@ -46,7 +46,7 @@ def profile(request):
 	
 
 class Follow(generics.GenericAPIView):
-	permission_classes = [IsAuthenticated]
+	permission_classes = [permissions.IsAuthenticated]
 	def post(self, request, *args, **kwargs):
 		follow = CustomUser.objects.get(id=kwargs.get("user_id"))
 		user = request.user
@@ -56,7 +56,7 @@ class Follow(generics.GenericAPIView):
 		return Response({"status": f"You have followed {follow}"}, status=status.HTTP_200_OK)
 
 class UnFollow(generics.GenericAPIView):
-	permission_classes = [IsAuthenticated]
+	permission_classes = [permissions.IsAuthenticated]
 	def post(self, request, *args, **kwargs):
 		unfollow = CustomUser.objects.get(id=kwargs.get("user_id"))
 		user = request.user
