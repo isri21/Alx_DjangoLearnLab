@@ -2,11 +2,7 @@ from accounts.models import User
 from rest_framework.authtoken.models import Token
 
 # Create your views here.
-def create_token(username):
-	user = User.objects.get(username=username)
-	token = Token.objects.create(user=user)
 
-	return token.key
 
 def get_token(username):
 	try:
