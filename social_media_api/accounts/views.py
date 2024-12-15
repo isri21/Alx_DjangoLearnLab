@@ -8,6 +8,8 @@ from rest_framework import status
 from .models import User
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
+from rest_framework import generics
+from accounts.models import User as CustomUser
 
 @api_view(["POST"])
 def register(request):
@@ -42,28 +44,27 @@ def profile(request):
 	except Exception:
 		return Response({"error": "An Error Occured"}, status=status.HTTP_400_BAD_REQUEST)
 	
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])	
-def follow(request, user_id):
-	if request.method == "POST":
-		follow = get_user_model().objects.get(id=user_id)
+
+class Follow(generics.GenericAPIView):
+	permission_classes = [IsAuthenticated]
+	def post(self, request, *args, **kwargs):
+		follow = CustomUser.objects.get(id=kwargs.get("user_id"))
 		user = request.user
 		user.following.add(follow)
 		follow.followers.add(user)
 
 		return Response({"status": f"You have followed {follow}"}, status=status.HTTP_200_OK)
-	
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated])	
-def unfollow(request, user_id):
-	if request.method == "POST":
-		unfollow = get_user_model().objects.get(id=user_id)
+class UnFollow(generics.GenericAPIView):
+	permission_classes = [IsAuthenticated]
+	def post(self, request, *args, **kwargs):
+		unfollow = CustomUser.objects.get(id=kwargs.get("user_id"))
 		user = request.user
 		user.following.remove(unfollow)
 		unfollow.followers.remove(user)
 
-		return Response({"status": f"You have unfollowed {unfollow}"}, status=status.HTTP_200_OK)
+		return Response({"status": f"You have followed {unfollow}"}, status=status.HTTP_200_OK)
+	
 	
 
 

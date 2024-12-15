@@ -3,7 +3,7 @@ from rest_framework import viewsets
 from .serializers import PostSerializer, CommentSerializer
 from .models import Post, Comment
 from .permissions import IsOwner
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import permissions
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,7 +18,7 @@ class PostViewSet(viewsets.ModelViewSet):
 		if self.action in ["update", "partial_update", "destroy"]:
 			return [IsOwner]
 		if self.action == "create":
-			return [IsAuthenticated]
+			return [permissions.IsAuthenticated]
 		return super().get_permissions()
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -26,7 +26,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 	serializer_class = CommentSerializer
 
 @api_view(["GET"])
-@permission_classes([IsAuthenticated])	
+@permission_classes([permissions.IsAuthenticated])	
 def feed(request):
 	following = request.user.following.all()
 	posts = Post.objects.filter(author__in=following)
