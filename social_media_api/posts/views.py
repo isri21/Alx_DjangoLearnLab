@@ -28,8 +28,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])	
 def feed(request):
-	following = request.user.following.all()
-	posts = Post.objects.filter(author__in=following)
+	following_users = request.user.following.all()
+	posts = Post.objects.filter(author__in=following_users).order_by("created_at")
 	serialized = PostSerializer(posts, many=True)
 	return Response(serialized.data, status=status.HTTP_200_OK)
 
