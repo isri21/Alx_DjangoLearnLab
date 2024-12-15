@@ -59,6 +59,7 @@ class UnFollow(generics.GenericAPIView):
 	permission_classes = [permissions.IsAuthenticated]
 	def post(self, request, *args, **kwargs):
 		unfollow = CustomUser.objects.get(id=kwargs.get("user_id"))
+		users = CustomUser.objects.all()
 		user = request.user
 		user.following.remove(unfollow)
 		unfollow.followers.remove(user)
