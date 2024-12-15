@@ -40,15 +40,12 @@ def feed(request):
 @permission_classes([permissions.IsAuthenticated])
 def like(request, pk):
 	post = generics.get_object_or_404(Post, pk=pk)
-	user = request.user
-
-	if Like.objects.filter(user=user, post=post).exists():
+	if Like.objects.filter(user=request.user, post=post).exists():
 		return Response({"info": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-
-	like, created = Like.objects.get_or_create(user=user, post=post)
+	like, created = Like.objects.get_or_create(user=request.user, post=post)
 	notification = Notification.objects.create(
 		recipient=post.author,
-		actor=user,
+		actor=request.user,
 		verb="liked your post",
 		target=post,
 		target_content_type=ContentType.objects.get_for_model(Post),
